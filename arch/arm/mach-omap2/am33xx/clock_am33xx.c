@@ -246,7 +246,7 @@ void set_pru_spreadspectrum(u32 n, u32 m, u32 m2, u32 freq_div, u32 delta_m)
 	u32 ssc_deltamstep_dpll_disp;
 	u32 cm_clksel_pru_icss_ocp_clk;
 
-	printf("Enabling Spread Spectrum for PRU:\n"
+	printf("\n\nEnabling Spread Spectrum for PRU:\n"
 	       "         n: %4xh\n"
 	       "         m: %4xh\n"
 	       "        m2: %4xh\n"
