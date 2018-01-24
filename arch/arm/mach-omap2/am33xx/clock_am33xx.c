@@ -236,6 +236,87 @@ void enable_basic_clocks(void)
 	writel(0x1, &cmdpll->clktimer2clk);
 }
 
+void set_pru_spreadspectrum(u32 n, u32 m, u32 m2, u32 freq_div, u32 delta_m)
+{
+	u32 cm_clksel_dpll_disp;
+	u32 cm_div_m2_dpll_disp;
+	u32 cm_clkmode_dpll_disp;
+	u32 cm_idlest_dpll_disp;
+	u32 ssc_modfreqdiv_dpll_disp;
+	u32 ssc_deltamstep_dpll_disp;
+	u32 cm_clksel_pru_icss_ocp_clk;
+
+	printf("\n\nEnabling Spread Spectrum for PRU:\n"
+	       "         n: %4xh\n"
+	       "         m: %4xh\n"
+	       "        m2: %4xh\n"
+	       "  freq_div: %4xh\n"
+	       "   delta_m: %4xh\n"
+	       ,n, m, m2, freq_div, delta_m);
+
+	/* Put the DPLL in Bypass Mode. The CM_CLKMODE_DPLL_DISP.DPLL_MULT register bits are reset automatically */
+	cm_clkmode_dpll_disp = readl(dpll_disp_regs.cm_clkmode_dpll);
+	cm_clkmode_dpll_disp &= 0xfffffff8;
+	cm_clkmode_dpll_disp |= 0x00000004;
+	writel(cm_clkmode_dpll_disp, dpll_disp_regs.cm_clkmode_dpll);
+	while(!(readl(dpll_disp_regs.cm_idlest_dpll) & 0x100));
+
+	/* Set the division factors N, M and M2 */
+
+	cm_clksel_dpll_disp = readl(dpll_disp_regs.cm_clksel_dpll);
+	cm_clksel_dpll_disp &= ~0x7FFFF;
+	cm_clksel_dpll_disp |= (m << 0x8);
+	cm_clksel_dpll_disp |= n;
+	cm_div_m2_dpll_disp = 0xFFFFFFE0 | m2;
+	writel(cm_clksel_dpll_disp, dpll_disp_regs.cm_clksel_dpll);
+	writel(cm_div_m2_dpll_disp, dpll_disp_regs.cm_div_m2_dpll);
+
+	/* Program modulation frequency divider - exponent 0 | mantissa FREQ_DIV */
+	ssc_modfreqdiv_dpll_disp = readl(&cmwkup->sscmodfreqdivdplldisp);
+	ssc_modfreqdiv_dpll_disp &=  0xfffff880;
+	ssc_modfreqdiv_dpll_disp |= freq_div;
+	writel(ssc_modfreqdiv_dpll_disp, &cmwkup->sscmodfreqdivdplldisp);
+
+	/* Program the frequency spread - integer part 0 | fractional part DELTA_M */
+	ssc_deltamstep_dpll_disp = readl(&cmwkup->sscdeltamstepdplldisp);
+	ssc_deltamstep_dpll_disp &=  0xfff00000;
+	ssc_deltamstep_dpll_disp |= delta_m;
+	writel(ssc_deltamstep_dpll_disp, &cmwkup->sscdeltamstepdplldisp);
+
+	/* Set the SCC Mode and Enable the DPLL in Lock Mode */
+	cm_clkmode_dpll_disp &= 0xffff2ff8;
+	cm_clkmode_dpll_disp |= (1 << 0xC);
+	cm_clkmode_dpll_disp |= 0x07;
+	writel(cm_clkmode_dpll_disp, dpll_disp_regs.cm_clkmode_dpll);
+	while(!((cm_idlest_dpll_disp = readl(dpll_disp_regs.cm_idlest_dpll)) & 0x1));
+
+	/* Switch the PRU-ICSS OCP clock to DISP DPLL */
+	writel(0x1, &cmdpll->clkpruicssocpclk);
+
+	/* Read them back */
+	cm_clkmode_dpll_disp = readl(dpll_disp_regs.cm_clkmode_dpll);
+	cm_clksel_dpll_disp = readl(dpll_disp_regs.cm_clksel_dpll);
+	cm_div_m2_dpll_disp = readl(dpll_disp_regs.cm_div_m2_dpll);
+	ssc_modfreqdiv_dpll_disp = readl(&cmwkup->sscmodfreqdivdplldisp);
+	ssc_deltamstep_dpll_disp = readl(&cmwkup->sscdeltamstepdplldisp);
+	cm_clksel_pru_icss_ocp_clk = readl(&cmdpll->clkpruicssocpclk);
+
+
+
+	printf("Final values:\n"
+	       "         cm_idlest_dpll_disp: %08xh\n"
+	       "        cm_clkmode_dpll_disp: %08xh\n"
+	       "         cm_clksel_dpll_disp: %08xh\n"
+	       "         cm_div_m2_dpll_disp: %08xh\n"
+	       "    ssc_modfreqdiv_dpll_disp: %08xh\n"
+	       "    ssc_deltamstep_dpll_disp: %08xh\n"
+	       "  cm_clksel_pru_icss_ocp_clk: %08xh\n"
+	       ,cm_idlest_dpll_disp, cm_clkmode_dpll_disp, cm_clksel_dpll_disp
+	       ,cm_div_m2_dpll_disp, ssc_modfreqdiv_dpll_disp
+	       ,ssc_deltamstep_dpll_disp, cm_clksel_pru_icss_ocp_clk);
+
+}
+
 /*
  * Enable Spread Spectrum for the MPU by calculating the required
  * values and setting the registers accordingly.

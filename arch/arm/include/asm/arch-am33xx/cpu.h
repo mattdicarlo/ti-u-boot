@@ -89,7 +89,9 @@ struct cm_wkuppll {
 	unsigned int idlestdpllddr;	/* offset 0x34 */
 	unsigned int resv5[2];
 	unsigned int clkseldpllddr;	/* offset 0x40 */
-	unsigned int resv6[4];
+	unsigned int resv6[2];
+	unsigned int sscdeltamstepdplldisp;/* off 0x4C */
+	unsigned int sscmodfreqdivdplldisp;/* off 0x50 */
 	unsigned int clkseldplldisp;	/* offset 0x54 */
 	unsigned int resv7[1];
 	unsigned int idlestdpllcore;	/* offset 0x5c */
@@ -199,7 +201,8 @@ struct cm_dpll {
 	unsigned int clktimer6clk;	/* offset 0x1C */
 	unsigned int resv3[2];
 	unsigned int clktimer1clk;	/* offset 0x28 */
-	unsigned int resv4[2];
+	unsigned int resv4;
+	unsigned int clkpruicssocpclk;  /* offset 0x30 */
 	unsigned int clklcdcpixelclk;	/* offset 0x34 */
 };
 
