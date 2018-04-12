@@ -95,7 +95,7 @@
 	"bootpart=0:2\0" \
 	"bootdir=/boot\0" \
 	"bootfile=zImage\0" \
-	"fdtfile=undefined\0" \
+	"fdtfile=xl-bone.dtb\0" \
 	"console=ttyO0,115200n8\0" \
 	"partitions=" \
 		"uuid_disk=${uuid_gpt_disk};" \
@@ -126,24 +126,6 @@
 		"run ramargs; " \
 		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
 	"findfdt="\
-		"if test $board_name = A335BONE; then " \
-			"setenv fdtfile am335x-bone.dtb; fi; " \
-		"if test $board_name = A335BNLT; then " \
-			"setenv fdtfile am335x-boneblack.dtb; fi; " \
-		"if test $board_name = BBBW; then " \
-			"setenv fdtfile am335x-boneblack-wireless.dtb; fi; " \
-		"if test $board_name = BBG1; then " \
-			"setenv fdtfile am335x-bonegreen.dtb; fi; " \
-		"if test $board_name = BBGW; then " \
-			"setenv fdtfile am335x-bonegreen-wireless.dtb; fi; " \
-		"if test $board_name = BBBL; then " \
-			"setenv fdtfile am335x-boneblue.dtb; fi; " \
-		"if test $board_name = A33515BB; then " \
-			"setenv fdtfile am335x-evm.dtb; fi; " \
-		"if test $board_name = A335X_SK; then " \
-			"setenv fdtfile am335x-evmsk.dtb; fi; " \
-		"if test $board_name = A335_ICE; then " \
-			"setenv fdtfile am335x-icev2.dtb; fi; " \
 		"if test $fdtfile = undefined; then " \
 			"echo WARNING: Could not determine device tree to use; fi; \0" \
 	"init_console=" \

@@ -26,7 +26,14 @@
 	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
 	"loadimage=load ${devtype} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 	"loadfdt=load ${devtype} ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
-	"envboot=mmc dev ${mmcdev}; " \
+	"envboot=mmc dev 0; " \
+		"if mmc rescan ; " \
+			"then echo micro SD card found;" \
+			"setenv mmcdev 0;" \
+		"else echo No micro SD card found, setting mmcdev to 1;" \
+			"setenv mmcdev 1;" \
+		"fi;" \
+		"mmc dev ${mmcdev}; " \
 		"if mmc rescan; then " \
 			"echo SD/MMC found on device ${mmcdev};" \
 			"if run loadbootscript; then " \
