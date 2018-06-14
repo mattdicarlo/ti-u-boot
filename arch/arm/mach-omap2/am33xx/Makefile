@@ -24,6 +24,8 @@ obj-y	+= mux.o
 obj-y	+= prcm-regs.o
 obj-y	+= hw_data.o
 obj-y	+= fdt.o
+obj-y	+= pru.o
+obj-y	+= vorne_xl.o
 
 obj-$(CONFIG_CLOCK_SYNTHESIZER)	+= clk_synthesizer.o
 

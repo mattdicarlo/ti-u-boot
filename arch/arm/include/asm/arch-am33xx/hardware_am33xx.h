@@ -30,6 +30,7 @@
 /* Control Module Base Address */
 #define CTRL_BASE			0x44E10000
 #define CTRL_DEVICE_BASE		0x44E10600
+#define CONF_MOD_PIN_BASE		(CTRL_BASE + 0x0800)
 
 /* PRCM Base Address */
 #define PRCM_BASE			0x44E00000
@@ -37,6 +38,9 @@
 #define CM_WKUP				0x44E00400
 #define CM_DPLL				0x44E00500
 #define CM_RTC				0x44E00800
+
+#define PRM_PER				0x44E00C00
+#define RM_PER_RSTCTRL			(PRM_PER + 0x0)
 
 #define PRM_RSTCTRL			(PRCM_BASE + 0x0F00)
 #define PRM_RSTST			(PRM_RSTCTRL + 8)
