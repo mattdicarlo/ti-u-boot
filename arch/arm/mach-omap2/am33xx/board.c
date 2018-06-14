@@ -38,6 +38,7 @@
 #include <linux/usb/musb.h>
 #include <asm/omap_musb.h>
 #include <asm/davinci_rtc.h>
+#include <asm/arch/vorne_xl.h>
 
 #define AM43XX_EMIF_BASE				0x4C000000
 #define AM43XX_SDRAM_CONFIG_OFFSET			0x8
@@ -402,6 +403,8 @@ int board_early_init_f(void)
 __weak void am33xx_spl_board_init(void)
 {
 	set_pru_spreadspectrum(0, 0x32, 0x6, 0x14, 0x2666);
+	init_pru_icss();
+	enable_vorne_810_display_pin_mux();
 }
 
 #if defined(CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC)
