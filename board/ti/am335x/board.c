@@ -8,6 +8,7 @@
  */
 
 #include <common.h>
+#include <command.h>
 #include <dm.h>
 #include <env.h>
 #include <errno.h>
@@ -27,6 +28,7 @@
 #include <asm/arch/mmc_host_def.h>
 #include <asm/arch/sys_proto.h>
 #include <asm/arch/mem.h>
+#include <asm/arch/pru.h>
 #include <asm/io.h>
 #include <asm/emif.h>
 #include <asm/gpio.h>
@@ -991,3 +993,43 @@ U_BOOT_DEVICE(am335x_mmc1) = {
 	.platdata = &am335x_mmc1_platdata,
 };
 #endif
+
+static int do_prussc(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+{
+	if (argc == 6) {
+		u32 n, m, m2, freq_div, delta_m;
+
+		n = simple_strtoul(argv[1], NULL, 16);
+		m = simple_strtoul(argv[2], NULL, 16);
+		m2 = simple_strtoul(argv[3], NULL, 16);
+		freq_div = simple_strtoul(argv[4], NULL, 16);
+		delta_m = simple_strtoul(argv[5], NULL, 16);
+
+		set_pru_spreadspectrum(n, m, m2, freq_div, delta_m);
+	} else {
+		return CMD_RET_USAGE;
+	}
+	return 0;
+}
+
+U_BOOT_CMD(prussc, 6, 1, do_prussc, "set PRU Spread Spectrum Clocking",
+	   "<n> <m> <m2> <freq_div> <delta_m>\n"
+	   "    - Set PRU Spread Spectrum Clocking parameters. All values\n"
+	   "      are in hex.\n");
+
+static int do_pruboot(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+{
+	if (argc == 2) {
+		u32 pru_num;
+
+		pru_num = simple_strtoul(argv[1], NULL, 16);
+		boot_pru(pru_num);
+	} else {
+		return CMD_RET_USAGE;
+	}
+	return 0;
+}
+
+U_BOOT_CMD(pruboot, 2, 1, do_pruboot, "boot a PRU",
+	   "<pru_num>\n"
+	   "    - Boot specified PRU.\n");
