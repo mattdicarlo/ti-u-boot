@@ -26,5 +26,7 @@ static struct module_pin_mux vorne_810_display_pin_mux[] = {
 
 void enable_vorne_810_display_pin_mux(void)
 {
+    printf("enable_vorne_810_display_pin_mux start\n");
 	configure_module_pin_mux(vorne_810_display_pin_mux);
+    printf("enable_vorne_810_display_pin_mux end\n");
 }
